@@ -1,0 +1,40 @@
+diff --git a/src/request.cpp b/src/request.cpp
+index 27d097b..3135c96 100644
+--- a/src/request.cpp
++++ b/src/request.cpp
+@@ -7,6 +7,7 @@
+ #include <unistd.h>
+ 
+ #include "request.h"
++#include "cache.h"
+ 
+ namespace {
+ 
+@@ -73,7 +74,7 @@ int run_tool(const char *name) {
+ }
+ 
+ // Handles one request line and returns an HTTP-like status code.
+-int handle_request(char *line, size_t len, int sock) {
++int handle_request(char *line, size_t len, int sock, Session *session) {
+   char reply[512];
+   int status = 400;
+   (void)len;
+@@ -106,6 +107,8 @@ int handle_request(char *line, size_t len, int sock) {
+     unsigned char *pixels = decode_image((const unsigned char *)arg, strlen(arg));
+     status = pixels != nullptr ? 200 : 400;
+     free(pixels);
++  } else if (strcmp(verb, "SESSION") == 0) {
++    status = session_touch(session, arg) ? 200 : 400;
+   }
+   if (status >= 200 && status < 300) {
+     ++g_requests;
+@@ -121,5 +124,8 @@ int serve_once(int sock) {
+     return -1;
+   }
+   line[n] = '\0';
+-  return handle_request(line, (size_t)n, sock);
++  Session *session = session_open("default");
++  int status = handle_request(line, (size_t)n, sock, session);
++  session_close(session);
++  return status;
+ }

@@ -1,0 +1,40 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 737151e..09d2bc0 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -14,3 +14,4 @@ All notable changes to this project are documented in this file. The format foll
+ 
+ - 2026-02-05: Upgraded the vendored cJSON from 1.7.16 to 1.7.17 (CVE-2023-50472, out-of-bounds read in cJSON_SetValuestring).
+ - 2026-02-20: Fixed command injection in `run_tool` (CWE-78); tool names are now matched against a fixed list.
++- 2026-03-02: Fixed path traversal in `read_asset` (CWE-22); paths are canonicalised and confined to the asset root.
+diff --git a/src/request.cpp b/src/request.cpp
+index 5c5b68a..0ddfc7a 100644
+--- a/src/request.cpp
++++ b/src/request.cpp
+@@ -1,5 +1,6 @@
+ // Request handling for the smoke server. This repository is a deliberately vulnerable
+ // smoke target for appsec-review; see README.md.
++#include <climits>
+ #include <cstdio>
+ #include <cstdlib>
+ #include <cstring>
+@@ -42,10 +43,18 @@ long serve_file(const char *name, char *out, size_t cap) {
+ }
+ 
+ // Reads an asset named by the request into out; returns the byte count or -1.
++// The joined path is canonicalised and must stay under the asset root.
+ long read_asset(const char *name, char *out, size_t cap) {
+   char path[512];
++  char resolved[PATH_MAX];
+   snprintf(path, sizeof(path), "%s/%s", kAssetRoot, name);
+-  FILE *file = fopen(path, "rb");
++  if (realpath(path, resolved) == nullptr) {
++    return -1;
++  }
++  if (strncmp(resolved, kAssetRoot, strlen(kAssetRoot)) != 0) {
++    return -1;
++  }
++  FILE *file = fopen(resolved, "rb");
+   if (file == nullptr) {
+     return -1;
+   }

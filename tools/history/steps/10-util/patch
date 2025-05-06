@@ -1,0 +1,67 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6582043..8d41e64 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -55,5 +55,6 @@ add_executable(smoke_synthetic src/synthetic.cpp)
+ add_executable(smoke_server
+   src/main.cpp
+   src/request.cpp
++  src/util.c
+ )
+ target_link_libraries(smoke_server PRIVATE smoke_zlib smoke_bz2 smoke_lz4 smoke_cjson)
+diff --git a/src/util.c b/src/util.c
+new file mode 100644
+index 0000000..88b5a69
+--- /dev/null
++++ b/src/util.c
+@@ -0,0 +1,23 @@
++// Small C helpers shared by the smoke server. Deliberately vulnerable smoke target; see README.md.
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++
++#include "util.h"
++
++// Puts a frame into its initial state.
++void frame_reset(struct frame *f) {
++  strcpy(f->data, "ready");
++  f->tag[0] = '\0';
++  f->used = 0;
++}
++
++// Copies up to one frame of payload; longer payloads are refused.
++int frame_fill(struct frame *f, const char *src, size_t n) {
++  if (n < sizeof(f->data)) {
++    memcpy(f->data, src, n);
++    f->used = n;
++    return 0;
++  }
++  return -1;
++}
+diff --git a/src/util.h b/src/util.h
+new file mode 100644
+index 0000000..ccf36e1
+--- /dev/null
++++ b/src/util.h
+@@ -0,0 +1,21 @@
++// Small C helpers shared by the smoke server.
++#pragma once
++
++#include <stddef.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++struct frame {
++  char data[64];
++  char tag[4];
++  size_t used;
++};
++
++void frame_reset(struct frame *f);
++int frame_fill(struct frame *f, const char *src, size_t n);
++
++#ifdef __cplusplus
++}
++#endif

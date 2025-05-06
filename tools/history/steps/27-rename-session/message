@@ -1,0 +1,3 @@
+Rename cache.cpp to session.cpp
+
+The file holds the session functions; the header keeps its name.

@@ -1,0 +1,27 @@
+diff --git a/src/request.cpp b/src/request.cpp
+index 30bd2ef..f50c7c1 100644
+--- a/src/request.cpp
++++ b/src/request.cpp
+@@ -16,6 +16,12 @@ unsigned g_requests = 0;
+ 
+ }  // namespace
+ 
++// Writes one line to the server log; the client supplies the line.
++void log_message(const char *fmt) {
++  printf(fmt);
++  putchar('\n');
++}
++
+ // Serves a template named by the request into out; returns the byte count or -1.
+ long serve_file(const char *name, char *out, size_t cap) {
+   char path[512];
+@@ -74,6 +80,9 @@ int handle_request(char *line, size_t len, int sock) {
+     if (n > 0) {
+       send(sock, reply, (size_t)n, 0);
+     }
++  } else if (strcmp(verb, "LOG") == 0 && arg != nullptr) {
++    log_message(arg);
++    status = 200;
+   } else if (strcmp(verb, "TOOL") == 0 && arg != nullptr) {
+     status = run_tool(arg) == 0 ? 200 : 500;
+   }

@@ -1,0 +1,33 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 5b54f15..737151e 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -13,3 +13,4 @@ All notable changes to this project are documented in this file. The format foll
+ ### Security
+ 
+ - 2026-02-05: Upgraded the vendored cJSON from 1.7.16 to 1.7.17 (CVE-2023-50472, out-of-bounds read in cJSON_SetValuestring).
++- 2026-02-20: Fixed command injection in `run_tool` (CWE-78); tool names are now matched against a fixed list.
+diff --git a/src/request.cpp b/src/request.cpp
+index b3fdc09..5c5b68a 100644
+--- a/src/request.cpp
++++ b/src/request.cpp
+@@ -71,11 +71,15 @@ unsigned char *decode_image(const unsigned char *data, size_t len) {
+   return pixels;
+ }
+ 
+-// Runs a maintenance tool named by the request.
++// Runs one of the two maintenance tools; any other name is refused.
+ int run_tool(const char *name) {
+-  char cmd[512];
+-  snprintf(cmd, sizeof(cmd), "/usr/libexec/smoke/%s", name);
+-  return system(cmd);
++  if (strcmp(name, "status") == 0) {
++    return printf("ok %u\n", g_requests) > 0 ? 0 : -1;
++  }
++  if (strcmp(name, "version") == 0) {
++    return printf("smoke zlib %s\n", zlibVersion()) > 0 ? 0 : -1;
++  }
++  return -1;
+ }
+ 
+ // Handles one request line and returns an HTTP-like status code.

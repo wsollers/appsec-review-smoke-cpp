@@ -1,0 +1,4 @@
+Add an EXEC verb that streams a report
+
+The report helper takes the client's argument and its output is sent back
+line by line.

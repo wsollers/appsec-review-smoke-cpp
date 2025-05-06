@@ -1,0 +1,1 @@
+https://github.com/madler/zlib/archive/refs/tags/v1.2.11.tar.gz|629380c90a77b964d896ed37163f5c3a34f6e6d897311f1df2a7016355c45eff|1|third_party/zlib|^(adler32|compress|crc32|deflate|gzclose|gzlib|gzread|gzwrite|infback|inffast|inflate|inftrees|trees|uncompr|zutil)\.c$|^(crc32|deflate|gzguts|inffast|inffixed|inflate|inftrees|trees|zconf|zlib|zutil)\.h$|^README$

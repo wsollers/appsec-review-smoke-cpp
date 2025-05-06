@@ -1,0 +1,8 @@
+Fix command injection in run_tool (CWE-78)
+
+The TOOL verb passed the tool name from the request into a shell command
+string and ran it with system(), so a name containing shell metacharacters
+ran arbitrary commands as the server user. run_tool now matches the name
+against the two tools it supports and performs them directly: there is no
+command string and no shell, so no request input reaches a command
+interpreter.

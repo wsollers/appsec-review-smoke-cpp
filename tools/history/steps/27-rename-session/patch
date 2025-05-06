@@ -1,0 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index aaa0629..fd4a1d2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -55,7 +55,7 @@ add_executable(smoke_synthetic src/synthetic.cpp)
+ add_executable(smoke_server
+   src/main.cpp
+   src/request.cpp
+-  src/cache.cpp
++  src/session.cpp
+   src/util.c
+ )
+ target_link_libraries(smoke_server PRIVATE smoke_zlib smoke_bz2 smoke_lz4 smoke_cjson)
+diff --git a/src/cache.cpp b/src/session.cpp
+similarity index 100%
+rename from src/cache.cpp
+rename to src/session.cpp

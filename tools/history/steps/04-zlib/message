@@ -1,0 +1,3 @@
+Vendor zlib 1.2.11 as a static library
+
+Built from the upstream sources under third_party/zlib with warnings silenced.

@@ -1,0 +1,91 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8d41e64..aaa0629 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -55,6 +55,7 @@ add_executable(smoke_synthetic src/synthetic.cpp)
+ add_executable(smoke_server
+   src/main.cpp
+   src/request.cpp
++  src/cache.cpp
+   src/util.c
+ )
+ target_link_libraries(smoke_server PRIVATE smoke_zlib smoke_bz2 smoke_lz4 smoke_cjson)
+diff --git a/src/cache.cpp b/src/cache.cpp
+new file mode 100644
+index 0000000..8336b99
+--- /dev/null
++++ b/src/cache.cpp
+@@ -0,0 +1,55 @@
++// Session cache for the smoke server. Deliberately vulnerable smoke target; see README.md.
++#include <cstdlib>
++#include <cstring>
++
++#include "cache.h"
++
++Session *session_open(const char *name) {
++  Session *session = (Session *)malloc(sizeof(Session));
++  if (session == nullptr) {
++    return nullptr;
++  }
++  size_t n = strlen(name);
++  if (n >= sizeof(session->name)) {
++    n = sizeof(session->name) - 1;
++  }
++  memcpy(session->name, name, n);
++  session->name[n] = '\0';
++  session->hits = 0;
++  session->scratch = (char *)malloc(64);
++  if (session->scratch != nullptr) {
++    session->scratch[0] = '\0';
++  }
++  return session;
++}
++
++// Records one use of the session; "reset" drops and recreates the scratch buffer.
++bool session_touch(Session *session, const char *arg) {
++  if (session == nullptr) {
++    return false;
++  }
++  session->hits++;
++  if (arg != nullptr && strcmp(arg, "reset") == 0) {
++    free(session->scratch);
++    session->scratch[0] = '\0';
++    session->scratch = (char *)malloc(64);
++    return session->scratch != nullptr;
++  }
++  if (arg != nullptr && session->scratch != nullptr) {
++    size_t n = strlen(arg);
++    if (n > 63) {
++      n = 63;
++    }
++    memcpy(session->scratch, arg, n);
++    session->scratch[n] = '\0';
++  }
++  return true;
++}
++
++void session_close(Session *session) {
++  if (session == nullptr) {
++    return;
++  }
++  free(session->scratch);
++  free(session);
++}
+diff --git a/src/cache.h b/src/cache.h
+new file mode 100644
+index 0000000..a0e0218
+--- /dev/null
++++ b/src/cache.h
+@@ -0,0 +1,12 @@
++// Per-connection session state for the smoke server.
++#pragma once
++
++struct Session {
++  char name[32];
++  unsigned hits;
++  char *scratch;
++};
++
++Session *session_open(const char *name);
++bool session_touch(Session *session, const char *arg);
++void session_close(Session *session);

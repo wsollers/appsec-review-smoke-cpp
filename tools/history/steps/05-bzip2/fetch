@@ -1,0 +1,1 @@
+https://sourceware.org/pub/bzip2/bzip2-1.0.6.tar.gz|a2848f34fcd5d6cf47def00461fcb528a0484d8edef8208d6d2e2909dc61d9cd|1|third_party/bzip2|^(blocksort|huffman|crctable|randtable|compress|decompress|bzlib)\.c$|^bzlib(_private)?\.h$|^LICENSE$

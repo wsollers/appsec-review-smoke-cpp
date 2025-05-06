@@ -1,0 +1,7 @@
+Upgrade vendored cJSON from 1.7.16 to 1.7.17
+
+cJSON 1.7.16 can read past the end of a buffer in cJSON_SetValuestring when
+the new string is longer than the old one (CVE-2023-50472). We link cJSON
+for the STAT reply, so a long value could crash the server. 1.7.17 fixes the
+length handling; the vendored copy is replaced file for file with the
+upstream release.

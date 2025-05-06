@@ -1,0 +1,25 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1bf4136..85ce374 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -37,10 +37,19 @@ add_library(smoke_bz2 STATIC
+ target_include_directories(smoke_bz2 PUBLIC third_party/bzip2)
+ target_compile_options(smoke_bz2 PRIVATE -w)
+ 
++add_library(smoke_lz4 STATIC
++  third_party/lz4/lib/lz4.c
++  third_party/lz4/lib/lz4hc.c
++  third_party/lz4/lib/lz4frame.c
++  third_party/lz4/lib/xxhash.c
++)
++target_include_directories(smoke_lz4 PUBLIC third_party/lz4/lib)
++target_compile_options(smoke_lz4 PRIVATE -w)
++
+ add_executable(smoke_synthetic src/synthetic.cpp)
+ 
+ add_executable(smoke_server
+   src/main.cpp
+   src/request.cpp
+ )
+-target_link_libraries(smoke_server PRIVATE smoke_zlib smoke_bz2)
++target_link_libraries(smoke_server PRIVATE smoke_zlib smoke_bz2 smoke_lz4)

@@ -1,0 +1,37 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index a3e40c5..09b4b06 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
+   if (argc > 1) {
+     frame_fill(&f, argv[1], strlen(argv[1]));
+   }
++  maintenance_sync();
+   int sock = argc > 2 ? atoi(argv[2]) : 0;
+   return serve_once(sock) >= 0 ? 0 : 1;
+ }
+diff --git a/src/util.c b/src/util.c
+index da1904a..a406f8d 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -31,3 +31,8 @@ void frame_tag(struct frame *f, unsigned value) {
+ void legacy_copy(char *dst, const char *src, size_t len) {
+   memcpy(dst, src, len);
+ }
++
++// Flushes pending writes before the server starts serving.
++void maintenance_sync(void) {
++  system("/bin/true");
++}
+diff --git a/src/util.h b/src/util.h
+index 6f456d2..dad6959 100644
+--- a/src/util.h
++++ b/src/util.h
+@@ -17,6 +17,7 @@ void frame_reset(struct frame *f);
+ int frame_fill(struct frame *f, const char *src, size_t n);
+ void frame_tag(struct frame *f, unsigned value);
+ void legacy_copy(char *dst, const char *src, size_t len);
++void maintenance_sync(void);
+ 
+ #ifdef __cplusplus
+ }

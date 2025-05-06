@@ -1,0 +1,43 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index 5e467dd..a3e40c5 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -8,6 +8,7 @@
+ int main(int argc, char **argv) {
+   struct frame f;
+   frame_reset(&f);
++  frame_tag(&f, (unsigned)argc);
+   if (argc > 1) {
+     frame_fill(&f, argv[1], strlen(argv[1]));
+   }
+diff --git a/src/util.c b/src/util.c
+index 88b5a69..da1904a 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -21,3 +21,13 @@ int frame_fill(struct frame *f, const char *src, size_t n) {
+   }
+   return -1;
+ }
++
++// Tags the frame with the low byte of a counter: at most three decimal digits.
++void frame_tag(struct frame *f, unsigned value) {
++  sprintf(f->tag, "%u", value & 0xffu);
++}
++
++// Older copy routine kept for reference; nothing calls it.
++void legacy_copy(char *dst, const char *src, size_t len) {
++  memcpy(dst, src, len);
++}
+diff --git a/src/util.h b/src/util.h
+index ccf36e1..6f456d2 100644
+--- a/src/util.h
++++ b/src/util.h
+@@ -15,6 +15,8 @@ struct frame {
+ 
+ void frame_reset(struct frame *f);
+ int frame_fill(struct frame *f, const char *src, size_t n);
++void frame_tag(struct frame *f, unsigned value);
++void legacy_copy(char *dst, const char *src, size_t len);
+ 
+ #ifdef __cplusplus
+ }
