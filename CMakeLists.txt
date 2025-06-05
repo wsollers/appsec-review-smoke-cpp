@@ -6,3 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(smoke_synthetic src/synthetic.cpp)
 
+add_executable(smoke_server
+  src/main.cpp
+  src/request.cpp
+)
