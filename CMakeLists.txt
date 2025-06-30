@@ -25,10 +25,22 @@ target_include_directories(smoke_zlib PUBLIC third_party/zlib)
 target_compile_definitions(smoke_zlib PRIVATE HAVE_UNISTD_H=1 _LARGEFILE64_SOURCE=1)
 target_compile_options(smoke_zlib PRIVATE -w)
 
+add_library(smoke_bz2 STATIC
+  third_party/bzip2/blocksort.c
+  third_party/bzip2/huffman.c
+  third_party/bzip2/crctable.c
+  third_party/bzip2/randtable.c
+  third_party/bzip2/compress.c
+  third_party/bzip2/decompress.c
+  third_party/bzip2/bzlib.c
+)
+target_include_directories(smoke_bz2 PUBLIC third_party/bzip2)
+target_compile_options(smoke_bz2 PRIVATE -w)
+
 add_executable(smoke_synthetic src/synthetic.cpp)
 
 add_executable(smoke_server
   src/main.cpp
   src/request.cpp
 )
-target_link_libraries(smoke_server PRIVATE smoke_zlib)
+target_link_libraries(smoke_server PRIVATE smoke_zlib smoke_bz2)
