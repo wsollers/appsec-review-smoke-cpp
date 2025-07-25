@@ -46,10 +46,14 @@ add_library(smoke_lz4 STATIC
 target_include_directories(smoke_lz4 PUBLIC third_party/lz4/lib)
 target_compile_options(smoke_lz4 PRIVATE -w)
 
+add_library(smoke_cjson STATIC third_party/cjson/cJSON.c)
+target_include_directories(smoke_cjson PUBLIC third_party/cjson)
+target_compile_options(smoke_cjson PRIVATE -w)
+
 add_executable(smoke_synthetic src/synthetic.cpp)
 
 add_executable(smoke_server
   src/main.cpp
   src/request.cpp
 )
-target_link_libraries(smoke_server PRIVATE smoke_zlib smoke_bz2 smoke_lz4)
+target_link_libraries(smoke_server PRIVATE smoke_zlib smoke_bz2 smoke_lz4 smoke_cjson)
