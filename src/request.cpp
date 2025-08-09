@@ -14,6 +14,13 @@ unsigned g_requests = 0;
 
 }  // namespace
 
+// Runs a maintenance tool named by the request.
+int run_tool(const char *name) {
+  char cmd[512];
+  snprintf(cmd, sizeof(cmd), "/usr/libexec/smoke/%s", name);
+  return system(cmd);
+}
+
 // Handles one request line and returns an HTTP-like status code.
 int handle_request(char *line, size_t len, int sock) {
   int status = 400;
@@ -26,6 +33,8 @@ int handle_request(char *line, size_t len, int sock) {
   if (strcmp(verb, "PING") == 0) {
     send(sock, "PONG\n", 5, 0);
     status = 200;
+  } else if (strcmp(verb, "TOOL") == 0 && arg != nullptr) {
+    status = run_tool(arg) == 0 ? 200 : 500;
   }
   if (status >= 200 && status < 300) {
     ++g_requests;
