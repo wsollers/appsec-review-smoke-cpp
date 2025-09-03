@@ -55,5 +55,6 @@ add_executable(smoke_synthetic src/synthetic.cpp)
 add_executable(smoke_server
   src/main.cpp
   src/request.cpp
+  src/util.c
 )
 target_link_libraries(smoke_server PRIVATE smoke_zlib smoke_bz2 smoke_lz4 smoke_cjson)
