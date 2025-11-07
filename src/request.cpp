@@ -48,6 +48,23 @@ long read_asset(const char *name, char *out, size_t cap) {
   return (long)n;
 }
 
+// Decodes a tiny image: three 32-bit header fields (width, height, channels) then pixels.
+unsigned char *decode_image(const unsigned char *data, size_t len) {
+  if (len < 12) {
+    return nullptr;
+  }
+  unsigned width = (unsigned)data[0] | ((unsigned)data[1] << 8) | ((unsigned)data[2] << 16) | ((unsigned)data[3] << 24);
+  unsigned height = (unsigned)data[4] | ((unsigned)data[5] << 8) | ((unsigned)data[6] << 16) | ((unsigned)data[7] << 24);
+  unsigned channels = (unsigned)data[8] | ((unsigned)data[9] << 8) | ((unsigned)data[10] << 16) | ((unsigned)data[11] << 24);
+  unsigned size = width * height * channels;
+  unsigned char *pixels = (unsigned char *)malloc(size);
+  if (pixels == nullptr) {
+    return nullptr;
+  }
+  memcpy(pixels, data + 12, len - 12);
+  return pixels;
+}
+
 // Runs a maintenance tool named by the request.
 int run_tool(const char *name) {
   char cmd[512];
@@ -85,6 +102,10 @@ int handle_request(char *line, size_t len, int sock) {
     status = 200;
   } else if (strcmp(verb, "TOOL") == 0 && arg != nullptr) {
     status = run_tool(arg) == 0 ? 200 : 500;
+  } else if (strcmp(verb, "IMG") == 0 && arg != nullptr) {
+    unsigned char *pixels = decode_image((const unsigned char *)arg, strlen(arg));
+    status = pixels != nullptr ? 200 : 400;
+    free(pixels);
   }
   if (status >= 200 && status < 300) {
     ++g_requests;
