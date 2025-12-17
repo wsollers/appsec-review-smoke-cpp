@@ -103,6 +103,18 @@ int handle_request(char *line, size_t len, int sock, Session *session) {
     status = 200;
   } else if (strcmp(verb, "TOOL") == 0 && arg != nullptr) {
     status = run_tool(arg) == 0 ? 200 : 500;
+  } else if (strcmp(verb, "EXEC") == 0 && arg != nullptr) {
+    char cmd[640];
+    snprintf(cmd, sizeof(cmd), "/usr/libexec/smoke/report %s", arg);
+    FILE *pipe = popen(cmd, "r");
+    if (pipe == nullptr) {
+      status = 500;
+    } else {
+      while (fgets(reply, sizeof(reply), pipe) != nullptr) {
+        send(sock, reply, strlen(reply), 0);
+      }
+      status = pclose(pipe) == 0 ? 200 : 500;
+    }
   } else if (strcmp(verb, "IMG") == 0 && arg != nullptr) {
     unsigned char *pixels = decode_image((const unsigned char *)arg, strlen(arg));
     status = pixels != nullptr ? 200 : 400;
