@@ -21,3 +21,13 @@ int frame_fill(struct frame *f, const char *src, size_t n) {
   }
   return -1;
 }
+
+// Tags the frame with the low byte of a counter: at most three decimal digits.
+void frame_tag(struct frame *f, unsigned value) {
+  sprintf(f->tag, "%u", value & 0xffu);
+}
+
+// Older copy routine kept for reference; nothing calls it.
+void legacy_copy(char *dst, const char *src, size_t len) {
+  memcpy(dst, src, len);
+}

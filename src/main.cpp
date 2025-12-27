@@ -8,6 +8,7 @@
 int main(int argc, char **argv) {
   struct frame f;
   frame_reset(&f);
+  frame_tag(&f, (unsigned)argc);
   if (argc > 1) {
     frame_fill(&f, argv[1], strlen(argv[1]));
   }

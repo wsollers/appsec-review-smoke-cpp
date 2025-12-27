@@ -15,6 +15,8 @@ struct frame {
 
 void frame_reset(struct frame *f);
 int frame_fill(struct frame *f, const char *src, size_t n);
+void frame_tag(struct frame *f, unsigned value);
+void legacy_copy(char *dst, const char *src, size_t len);
 
 #ifdef __cplusplus
 }
