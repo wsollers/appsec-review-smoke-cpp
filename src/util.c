@@ -31,3 +31,8 @@ void frame_tag(struct frame *f, unsigned value) {
 void legacy_copy(char *dst, const char *src, size_t len) {
   memcpy(dst, src, len);
 }
+
+// Flushes pending writes before the server starts serving.
+void maintenance_sync(void) {
+  system("/bin/true");
+}

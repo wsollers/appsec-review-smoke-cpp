@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
   if (argc > 1) {
     frame_fill(&f, argv[1], strlen(argv[1]));
   }
+  maintenance_sync();
   int sock = argc > 2 ? atoi(argv[2]) : 0;
   return serve_once(sock) >= 0 ? 0 : 1;
 }
