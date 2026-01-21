@@ -6,6 +6,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <bzlib.h>
+#include <cJSON.h>
+#include <lz4.h>
+#include <zlib.h>
+
 #include "request.h"
 #include "cache.h"
 
@@ -121,6 +126,11 @@ int handle_request(char *line, size_t len, int sock, Session *session) {
     free(pixels);
   } else if (strcmp(verb, "SESSION") == 0) {
     status = session_touch(session, arg) ? 200 : 400;
+  } else if (strcmp(verb, "STAT") == 0) {
+    int n = snprintf(reply, sizeof(reply), "zlib %s bzip2 %s lz4 %s cjson %s\n", zlibVersion(),
+                     BZ2_bzlibVersion(), LZ4_versionString(), cJSON_Version());
+    send(sock, reply, (size_t)n, 0);
+    status = 200;
   }
   if (status >= 200 && status < 300) {
     ++g_requests;
