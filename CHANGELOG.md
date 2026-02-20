@@ -13,3 +13,4 @@ All notable changes to this project are documented in this file. The format foll
 ### Security
 
 - 2026-02-05: Upgraded the vendored cJSON from 1.7.16 to 1.7.17 (CVE-2023-50472, out-of-bounds read in cJSON_SetValuestring).
+- 2026-02-20: Fixed command injection in `run_tool` (CWE-78); tool names are now matched against a fixed list.

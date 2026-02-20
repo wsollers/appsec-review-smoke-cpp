@@ -71,11 +71,15 @@ unsigned char *decode_image(const unsigned char *data, size_t len) {
   return pixels;
 }
 
-// Runs a maintenance tool named by the request.
+// Runs one of the two maintenance tools; any other name is refused.
 int run_tool(const char *name) {
-  char cmd[512];
-  snprintf(cmd, sizeof(cmd), "/usr/libexec/smoke/%s", name);
-  return system(cmd);
+  if (strcmp(name, "status") == 0) {
+    return printf("ok %u\n", g_requests) > 0 ? 0 : -1;
+  }
+  if (strcmp(name, "version") == 0) {
+    return printf("smoke zlib %s\n", zlibVersion()) > 0 ? 0 : -1;
+  }
+  return -1;
 }
 
 // Handles one request line and returns an HTTP-like status code.
