@@ -1,5 +1,6 @@
 // Request handling for the smoke server. This repository is a deliberately vulnerable
 // smoke target for appsec-review; see README.md.
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -42,10 +43,18 @@ long serve_file(const char *name, char *out, size_t cap) {
 }
 
 // Reads an asset named by the request into out; returns the byte count or -1.
+// The joined path is canonicalised and must stay under the asset root.
 long read_asset(const char *name, char *out, size_t cap) {
   char path[512];
+  char resolved[PATH_MAX];
   snprintf(path, sizeof(path), "%s/%s", kAssetRoot, name);
-  FILE *file = fopen(path, "rb");
+  if (realpath(path, resolved) == nullptr) {
+    return -1;
+  }
+  if (strncmp(resolved, kAssetRoot, strlen(kAssetRoot)) != 0) {
+    return -1;
+  }
+  FILE *file = fopen(resolved, "rb");
   if (file == nullptr) {
     return -1;
   }

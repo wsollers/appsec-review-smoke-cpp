@@ -14,3 +14,4 @@ All notable changes to this project are documented in this file. The format foll
 
 - 2026-02-05: Upgraded the vendored cJSON from 1.7.16 to 1.7.17 (CVE-2023-50472, out-of-bounds read in cJSON_SetValuestring).
 - 2026-02-20: Fixed command injection in `run_tool` (CWE-78); tool names are now matched against a fixed list.
+- 2026-03-02: Fixed path traversal in `read_asset` (CWE-22); paths are canonicalised and confined to the asset root.
