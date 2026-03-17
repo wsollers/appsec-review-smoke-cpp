@@ -13,6 +13,8 @@ void frame_reset(struct frame *f) {
 }
 
 // Copies up to one frame of payload; longer payloads are refused.
+// The length is compared against the destination size on the only path to the copy,
+// so the copy cannot overrun data (reviewed 2026-03; see the commit log).
 int frame_fill(struct frame *f, const char *src, size_t n) {
   if (n < sizeof(f->data)) {
     memcpy(f->data, src, n);
