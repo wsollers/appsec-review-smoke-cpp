@@ -148,8 +148,6 @@ int handle_request(char *line, size_t len, int sock, Session *session) {
   if (status >= 200 && status < 300) {
     ++g_requests;
   }
-  int n = snprintf(reply, sizeof(reply), "%d X-Count: %u\n", status, g_requests);
-  send(sock, reply, (size_t)n, 0);
   return status;
 }
 
