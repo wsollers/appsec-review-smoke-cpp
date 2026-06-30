@@ -95,8 +95,11 @@ int run_tool(const char *name) {
 int handle_request(char *line, size_t len, int sock, Session *session) {
   char reply[512];
   int status = 400;
-  (void)len;
-  char *verb = line;
+  size_t i = 0;
+  while (i < len && (line[i] == ' ' || line[i] == '\t')) {
+    ++i;
+  }
+  char *verb = line + i;
   char *arg = strchr(verb, ' ');
   if (arg != nullptr) {
     *arg++ = '\0';
