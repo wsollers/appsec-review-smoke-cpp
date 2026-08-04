@@ -10,6 +10,11 @@ All notable changes to this project are documented in this file. The format foll
 - Smoke server with PING, TOOL and ASSET verbs.
 - Vendored zlib, bzip2, lz4 and cJSON as static libraries.
 
+### Changed
+
+- Builds with `-Wall -Wextra`.
+- `tools/make-history.sh` reproduces the commit graph.
+
 ### Security
 
 - 2026-02-05: Upgraded the vendored cJSON from 1.7.16 to 1.7.17 (CVE-2023-50472, out-of-bounds read in cJSON_SetValuestring).
