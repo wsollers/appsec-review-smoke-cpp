@@ -100,6 +100,13 @@ int handle_request(char *line, size_t len, int sock, Session *session) {
     ++i;
   }
   char *verb = line + i;
+  if (strncmp(verb, "LEN ", 4) == 0) {
+    long declared = strtol(verb + 4, &verb, 10);
+    if (declared < 0 || (size_t)declared > len) {
+      return 400;
+    }
+    verb += *verb == ' ' ? 1 : 0;
+  }
   char *arg = strchr(verb, ' ');
   if (arg != nullptr) {
     *arg++ = '\0';
